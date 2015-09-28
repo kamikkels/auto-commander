@@ -1,0 +1,110 @@
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    text-transform: uppercase;
+    height: 100%;
+}
+
+.loading {
+    position: absolute;
+    opacity: 0.8;
+    margin: -24px 0 0 -24px;
+    left: 50%;
+    top: 50%;
+}
+
+#wrapper {
+    width: 710px;
+    margin: 0 auto;
+}
+
+header, article {
+    font-weight: 800;
+    color: #000;
+}
+
+header {
+    margin-top: 70px;
+}
+
+header h1 {
+    font-size: 60px;
+    line-height: 60px;
+    display: none;
+}
+
+#output {
+    font-size: 48px;
+    line-height: 48px;
+    margin: 60px 0;
+}
+
+#output.animate {
+    -webkit-transition: opacity 0.5s ease-out;
+    -moz-transition: opacity 0.5s ease-out;
+    -ms-transition: opacity 0.5s ease-out;
+    -o-transition: opacity 0.5s ease-out;
+    -transition: opacity 0.5s ease-out;
+}
+
+noscript {
+    font-weight: 800;
+    font-size: 48px;
+    line-height: 48px;
+    margin: 60px 0;
+}
+
+#output dd {
+    display: block;
+    margin: 60px 0;
+}
+
+#generate {
+    text-decoration: none;
+    font-size: 20px;
+    color: #000;
+}
+
+#generate:hover {
+    text-decoration: underline;
+    color: black;
+}
+
+aside {
+    position: absolute;
+    margin: 12px 8px;
+    right: 0;
+    top: 0;
+}
+
+#share li {
+    list-style: none;
+    display: inline;
+}
+
+#share-facebook {}
+#share-twitter {position: relative; top: -1px;}
+.twitter-share-button {
+    font-size: 11px;
+    color: #000;
+}
+
+footer {
+    text-transform: none;
+    position: absolute;
+    text-align: right;
+    line-height: 16px;
+    font-size: 12px;
+    color: #666;
+    margin: 12px 24px;
+    bottom: 0;
+    right: 0;
+}
+
+footer a {
+    text-decoration: none;
+    color: #000;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
