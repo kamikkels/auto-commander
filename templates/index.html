@@ -1,27 +1,22 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8" />
+  <head>
     <title>Random Commander</title>
-    <link rel="stylesheet" href="./styles/main.css" type="text/css" />
-</head>
-<body>
-    <div role="document">
-        <div class="wrapper">
-            <div class="header tc">
-                <h1 class="logo-heading mb0">{{ name }}</h1>
-            </div>
-            <div role="main">
-                <hr>
-                <a href="http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid={{verse_id}}">
-                    <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid={{verse_id}}&type=card"/>
-                </a>
-                <hr>
-            </div>
-            <div class="footer" role="contentinfo">
-                <a id="generate" href="#" title="Hit me again!">Hit me again!</a>
-            </div>
-        </div>
-    </div>
-</body>
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <main class="docs">
+      <div container>
+        <h1 class="heading--docs">{{ name }}</h1>
+        <p class="text--center">
+          <a href="http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid={{verse_id}}">
+            <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid={{verse_id}}&type=card">
+          </a>
+        </p>
+        <p class="text--center">
+          <a id="generate" href="{{ url_for('index')}}" title="Hit me again!">Hit me again!</a>
+        </p>
+      </div>
+    </main>
+  </body>
 </html>

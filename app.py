@@ -12,22 +12,22 @@ __version__ = "1.0.0"
 
 import os
 import json
+import yaml
 import flask
 from peewee import *
 from dbinterpret import *
 
-import sys
-from pprint import pprint
-
 #Work out where we are
 DIR = os.path.dirname(os.path.realpath(__file__))
 #Get the config
-with open("{}/sources/commander_ban.json".format(DIR)) as data_file:
+conf = yaml.safe_load(open("{}/rnd.cfg".format(DIR)))
+#Get the ban list
+with open(conf['ban_list'].format(DIR)) as data_file:
     source = json.load(data_file)
 
 app = flask.Flask(__name__)
 
-@app.route('/')
+@app.route('/randommander')
 def index():
     try:
         card = cards.select(cards.name, cards.multiverseid).where(cards.name.not_in(source)).\
