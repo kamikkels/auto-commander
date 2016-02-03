@@ -51,12 +51,13 @@ class CardLoader:
 
         for n in self.source:
             set = self.source[n]
+            # Set the values that might be missing
             nullable = ['block', 'onlineOnly']
-
             for i in nullable:
                 if i not in set:
                     set[i] = None
 
+            # Create the set if it doesn't already exist, if it does we'll just get it
             set_ob, created = sets.get_or_create(
                 name    = set['name'],
                 size    = len(set['cards']),
@@ -68,26 +69,14 @@ class CardLoader:
             )
 
             cards_done = 0
-
             for card in set['cards']:
-                # Deal with absent data
+                # Deal with more potentially absent data
                 nullable = ['manaCost','cmc','text','rarity','flavor','power','toughness','multiverseid','number']
-
                 for i in nullable:
                     if i not in card:
                         card[i] = None
 
-                card['sides'] = None
-                if 'names' in card:
-                    if cards.select().where(cards.name << card['names']).count() > 0:
-                        pair = cards.get(cards.name << card['names'])
-                        card['sides'] = pair.sides
-                    else:
-                        sides = card_sides.get()
-                        card['sides'] = sides.side
-                        sides.side += 1
-                        sides.save()
-
+                # Create the card if it doesn't already exist (some cards are in multiple sets)
                 card_ob, created = cards.get_or_create(
                     name         = card['name'],
                     layout       = card['layout'],
@@ -101,39 +90,59 @@ class CardLoader:
                     power        = card['power'],
                     toughness    = card['toughness'],
                     number       = card['number'],
-                    multiverseid = card['multiverseid'],
-                    sides        = card['sides']
+                    multiverseid = card['multiverseid']
                 )
 
+                # If a card was created we need to link it to some of the details
                 if(created):
-                    card_sets.create(card=card_ob.id,set=set_ob.id)
+                    # If it's a multiple sided card get the linking reference for it
+                    if 'names' in card:
+                        if cards.select().where(cards.name << card['names'], cards.name != card_ob.name ).count() > 0:
+                            pair = cards.get(cards.name << card['names'], cards.name != card_ob.name)
+                            card_ob.sides = pair.sides
+                        else:
+                            sides = card_sides.get()
+                            card_ob.sides = sides.side
+                            sides.side += 1
+                            sides.save()
+                        card_ob.save()
 
+                    # If the card has supertypes get each one and setup the required references
                     if 'supertypes' in card:
                         for cardtype in card['supertypes']:
                             type_ob, created = types.get_or_create(type=cardtype, super=True)
-                            card_types.create(card=card_ob.id, type=type_ob.id)
+                            card_types.get_or_create(card=card_ob.id, type=type_ob.id)
 
+                    # Setup the required types references
                     if 'types' in card:
                         for cardtype in card['types']:
                             type_ob, created = types.get_or_create(type=cardtype)
-                            card_types.create(card=card_ob.id, type=type_ob.id)
+                            card_types.get_or_create(card=card_ob.id, type=type_ob.id)
 
+                    # If the card has subtypes get each one and setup the required references
                     if 'subtypes' in card:
                         for cardtype in card['subtypes']:
                             type_ob, created = types.get_or_create(type=cardtype, sub=True)
-                            card_types.create(card=card_ob.id, type=type_ob.id)
+                            card_types.get_or_create(card=card_ob.id, type=type_ob.id)
 
+                    # If the card is colored setup the details
                     if 'colors' in card:
                         for color in card['colors']:
                             color_ob, created = colors.get_or_create(type=color)
-                            card_colors.create(card=card_ob.id, color=color_ob.id)
+                            card_colors.get_or_create(card=card_ob.id, color=color_ob.id)
 
+                # Link the card into the appropriate set
+                card_sets.get_or_create(card=card_ob.id,set=set_ob.id)
+
+                # And now were done with this card work out some nice cli output
                 cards_done += 1
                 sys.stdout.write("\rProcessed card {1:<5} in set {0}".format(sets_done, cards_done))
                 sys.stdout.flush()
+            # Keep a running total of everything
             total_cards += cards_done
             sets_done   += 1
-        print "{0} sets processed: {1} cards found".format(sets_done, total_cards)
+        # Now everything is done output some totals
+        print "\r\n{0} sets processed: {1} cards found".format(sets_done, total_cards)
 
 if __name__ == '__main__':
     loader = CardLoader()
